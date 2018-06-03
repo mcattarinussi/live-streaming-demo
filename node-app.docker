@@ -1,0 +1,11 @@
+FROM node:10.3-alpine
+
+RUN npm install -g http-server
+
+VOLUME /chunks
+
+CMD ["chunks", "-p", "8080"]
+
+ENTRYPOINT ["http-server"]
+
+EXPOSE 8080
