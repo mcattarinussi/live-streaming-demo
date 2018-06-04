@@ -6,21 +6,21 @@ The app uses [MPEG-DASH](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streamin
 
 The live streaming is simulated by looping a sample video.
 
-## Local setup
+## Local development
 
-Install [Docker](https://docs.docker.com/install/)
+To build and run the app locally you need to install [Docker](https://docs.docker.com/install/).
 
-Build the dash-encoder component
+### Build and push images
 
-    docker build . -t dash-encoder
+    sh build.sh
+
+**Note**: you need to be logged in to a Docker registry to push the images, see [docker login](https://docs.docker.com/engine/reference/commandline/login/). 
+
+### Run the app
 
 Run the dash-encoder component
 
     docker run -v "/$PWD/.chunks":/chunks live-streaming-demo-encoder
-
-Build the nodejs server app
-
-    docker build -t live-streaming-demo-app -f node-app.docker .
 
 Run the nodejs server app
 
