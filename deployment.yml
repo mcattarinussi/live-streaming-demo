@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: live-streaming-demo
+  labels:
+    app: live-streaming-demo
+spec:
+  selector:
+    matchLabels:
+      app: live-streaming-demo
+  template:
+    metadata:
+      labels:
+        app: live-streaming-demo
+    spec:
+      containers:
+        - name: dash-encoder
+          image: mattiacattarinussi/live-streaming-demo-encoder
+          volumeMounts:
+          - mountPath: /chunks
+            name: video-chunks
+        - name: node-app
+          image: mattiacattarinussi/live-streaming-demo-app
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /chunks
+              name: video-chunks
+      volumes:
+        - name: video-chunks
+          emptyDir: {}
