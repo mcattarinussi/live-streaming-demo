@@ -1,0 +1,15 @@
+{
+  "name": "live-streaming-demo",
+  "version": "1.0.0",
+  "description": "Demo project to experiment with live video streaming and nodejs",
+  "main": "server.js",
+  "repository": "https://github.com/mcattarinussi/live-streaming-demo",
+  "author": "Mattia Cattarinussi <mcattarinussi@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

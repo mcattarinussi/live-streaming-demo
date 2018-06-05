@@ -1,4 +1,4 @@
-# Nodejs live streaming demo
+# Live streaming demo
 
 Demo project to experiment with live video streaming, nodejs and kubernetes.
 
@@ -25,31 +25,19 @@ Start the minikube cluster
 $ minikube start
 ```
 
-Create the backend deployment and service
+Deploy the application
 ```bash
 $ kubectl create -f ./deployment.yml
 ```
 
-Check if the service has been created
-```bash
-$ kubectl get services
-NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-kubernetes                    ClusterIP   10.96.0.1        <none>        443/TCP        5s
-live-streaming-demo-backend   NodePort    10.100.157.228   <none>        80:32560/TCP   7s
-```
-
-Get the public app url
-```bash
-$ export LIVE_STREAM_URL=$(minikube service live-streaming-demo --url)
-$ echo $LIVE_STREAM_URL
-http://192.168.99.100:32560
-```
-
-Setup the live stream video url `$LIVE_STREAM_URL/stream.mpd` in your dash client. Check [here](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP#Clients_and_libraries) for a list of supported clients.
+Open the app in your browser
+- On MacOS: `open $(minikube service live-streaming-demo-frontend --url)`
+- On linux: `xdg-open $(minikube service live-streaming-demo-frontend --url)`
 
 ## TODO
 
-- [ ] Simple client webapp
-- [ ] Deploy
+- [x] Simple client webapp
+- [x] Deploy local
 - [ ] Implement user authentication
 - [ ] Limit user concurrent access to 3 video streams
+- [ ] Deploy on cloud

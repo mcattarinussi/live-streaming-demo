@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y wget
 
 RUN wget https://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4
 
-VOLUME /chunks
+VOLUME /stream
 
 CMD ["-stream_loop", "-1", \
      "-i", "big_buck_bunny_720p_1mb.mp4", \
@@ -24,7 +24,7 @@ CMD ["-stream_loop", "-1", \
      "-remove_at_exit", "1", \
      "-min_seg_duration", "2000000", \
      "-f", "dash", \
-     "/chunks/stream.mpd" \
+     "/stream/stream.mpd" \
 ]
 
 ENTRYPOINT ["ffmpeg"]

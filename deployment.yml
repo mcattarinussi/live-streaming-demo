@@ -33,17 +33,17 @@ spec:
         - name: dash-encoder
           image: mattiacattarinussi/live-streaming-demo-encoder
           volumeMounts:
-          - mountPath: /chunks
-            name: video-chunks
+          - mountPath: /stream
+            name: stream-chunks
         - name: app-backend
           image: mattiacattarinussi/live-streaming-demo-backend
           ports:
             - containerPort: 8080
           volumeMounts:
-            - mountPath: /chunks
-              name: video-chunks
+            - mountPath: /stream
+              name: stream-chunks
       volumes:
-        - name: video-chunks
+        - name: stream-chunks
           emptyDir: {}
 ---
 apiVersion: v1
