@@ -1,17 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: live-streaming-demo-backend
+spec:
+  selector:
+    app: live-streaming-demo
+    tier: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: live-streaming-demo
+  name: live-streaming-demo-backend
   labels:
     app: live-streaming-demo
 spec:
   selector:
     matchLabels:
       app: live-streaming-demo
+      tier: backend
   template:
     metadata:
       labels:
         app: live-streaming-demo
+        tier: backend
     spec:
       containers:
         - name: dash-encoder

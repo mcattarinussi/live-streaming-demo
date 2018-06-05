@@ -25,36 +25,24 @@ Start the minikube cluster
 $ minikube start
 ```
 
-Create the app deployment
+Create the backend deployment and service
 ```bash
 $ kubectl create -f ./deployment.yml
 ```
 
-View information about the deployment
-```bash
-$ kubectl get deployments
-NAME                  DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-live-streaming-demo   1         1         1            1           1m
-```
-
-Expose the Pod
-```bash
-$ kubectl expose deployment live-streaming-demo --type=NodePort
-```
-
-Check the service has been created
+Check if the service has been created
 ```bash
 $ kubectl get services
-NAME                  TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
-kubernetes            ClusterIP   10.96.0.1      <none>        443/TCP          1m
-live-streaming-demo   NodePort    10.101.41.73   <none>        8080:30841/TCP   2s
+NAME                          TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes                    ClusterIP   10.96.0.1        <none>        443/TCP        5s
+live-streaming-demo-backend   NodePort    10.100.157.228   <none>        80:32560/TCP   7s
 ```
 
 Get the public app url
 ```bash
 $ export LIVE_STREAM_URL=$(minikube service live-streaming-demo --url)
 $ echo $LIVE_STREAM_URL
-http://192.168.99.100:30841
+http://192.168.99.100:32560
 ```
 
 Setup the live stream video url `$LIVE_STREAM_URL/stream.mpd` in your dash client. Check [here](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP#Clients_and_libraries) for a list of supported clients.
