@@ -4,7 +4,7 @@ RUN npm install -g http-server
 
 VOLUME /chunks
 
-CMD ["chunks", "-p", "8080"]
+CMD ["chunks", "-p", "8080", "--cors", "*"]
 
 ENTRYPOINT ["http-server"]
 

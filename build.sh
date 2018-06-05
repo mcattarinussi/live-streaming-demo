@@ -3,19 +3,25 @@
 DOCKER_USER=$(docker info | sed '/Username:/!d;s/.* //');
 
 echo "Building dash-encoder"
-docker build -t live-streaming-demo-encoder -f dash-encoder.docker .
+docker build -t live-streaming-demo-encoder -f ./docker/dash-encoder .
 
-echo "Building node app"
-docker build -t live-streaming-demo-app -f node-app.docker .
+echo "Building backend app"
+docker build -t live-streaming-demo-backend -f ./docker/app.backend .
+
+echo "Building frontend app"
+docker build -t live-streaming-demo-frontend -f ./docker/app.frontend .
 
 if [ $DOCKER_USER ]
 then
     echo "Pushing dash-encoder"
     docker tag live-streaming-demo-encoder $DOCKER_USER/live-streaming-demo-encoder
     docker push $DOCKER_USER/live-streaming-demo-encoder
-    echo "Pushing node-app"
-    docker tag live-streaming-demo-app $DOCKER_USER/live-streaming-demo-app
-    docker push $DOCKER_USER/live-streaming-demo-app
+    echo "Pushing backend app"
+    docker tag live-streaming-demo-backend $DOCKER_USER/live-streaming-demo-backend
+    docker push $DOCKER_USER/live-streaming-demo-backend
+    echo "Pushing frontend app"
+    docker tag live-streaming-demo-frontend $DOCKER_USER/live-streaming-demo-frontend
+    docker push $DOCKER_USER/live-streaming-demo-frontend
 else
     echo "User not logged in: skip pushing docker images to Dockerhub"
 fi
