@@ -38,6 +38,6 @@ Open the app in your browser
 
 - [x] Simple client webapp
 - [x] Deploy local
-- [ ] Implement user authentication
+- [x] Implement user authentication
 - [ ] Limit user concurrent access to 3 video streams
 - [ ] Deploy on cloud

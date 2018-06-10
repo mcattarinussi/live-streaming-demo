@@ -1,4 +1,3 @@
-<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
 <style>
     video {
        width: 640px;
@@ -6,7 +5,73 @@
     }
 </style>
 <body>
-   <div>
-       <video data-dashjs-player autoplay src="/api/stream/stream.mpd" controls></video>
-   </div>
+    <h1>Live streaming demo</h1>
+    <form id="login" hidden="true">
+        <h2>Please signin</h2>
+        <input type="text" name="email" placeholder="email">
+        <input type="text" name="password" placeholder="password">
+        <input type="submit" value="SIGNIN">
+        <p id="login-error-msg"></p>
+    </form>
+    <div id="video-container"></div>
 </body>
+<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+<script>
+    var signinFormEl = document.getElementById('login');
+    var loginErrorEl = document.getElementById('login-error-msg');
+    var videoContainerEl = document.getElementById('video-container');
+    var jwtToken = localStorage.getItem('jwtToken');
+
+    // Check if user is already logged in
+    if (jwtToken) {
+        console.log('Found jwt token in local storage');
+        showVideoStream();
+    } else {
+        console.log('User not authenticated');
+        // Show signin form
+        signinFormEl.hidden = false;
+    }
+
+    // Signin handler
+    signinFormEl.addEventListener('submit', function(event) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/signin');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        // Signin response handler
+        xhr.onload = function() {
+            var result = JSON.parse(xhr.responseText);
+            // Successfully signed in. Hide signin form and show video player.
+            // Also store jwt token in the localStorage
+            if (xhr.status === 200) {
+                signinFormEl.hidden = true;
+                jwtToken = result.token;
+                localStorage.setItem('jwtToken', jwtToken);
+                showVideoStream();
+            }
+            else {
+                // Show error message
+                loginErrorEl.innerText = result.message;
+            }
+        };
+        // Send credentials for signin
+        xhr.send(JSON.stringify({
+            email: event.srcElement.elements.email.value,
+            password: event.srcElement.elements.password.value,
+        }));
+        event.preventDefault();
+    });
+
+    function showVideoStream() {
+        // Initialize video player
+        console.log('Initializing video player');
+        videoContainerEl.innerHTML = '<video id="video-player" controls></video>';
+        var player = dashjs.MediaPlayer().create();
+        player.extend('RequestModifier', () => ({
+            modifyRequestHeader: xhr => {
+                xhr.setRequestHeader('Authorization', `Bearer ${jwtToken}`);
+                return xhr;
+            }
+        }), true);
+        player.initialize(document.querySelector("#video-player"), '/api/stream/stream.mpd', true);
+    }
+</script>
