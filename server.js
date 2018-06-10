@@ -16,11 +16,12 @@ const apiRoutes = express.Router();
 app.use(express.json());
 // Protect api with jwt token authentication
 app.use(expressJwt({ secret: SUPERSECRET }).unless({ path: ['/api/signin'] }));
-//
-// app.use('/stream', express.static('stream'));
+
 app.use('/api', apiRoutes);
 
-// Routes
+// // Routes
+
+// User signin
 apiRoutes.post('/signin', (req, res) => {
   const user = users.getUser(req.body.email);
   // TODO: use a database and use the password hash instead
@@ -29,10 +30,14 @@ apiRoutes.post('/signin', (req, res) => {
   }
   console.log(`User ${user.info.email} succesfully signed in`);
   // Returns user info and authentication token
-  return res.json({ token: jwt.sign(user.info, SUPERSECRET) });
+  res.json({ token: jwt.sign(user.info, SUPERSECRET) });
 });
 
+// User profile
 apiRoutes.get('/me', (req, res) => res.json(req.user));
+
+// Video streaming mpd and chunks
+apiRoutes.get('/stream/*', (req, res) => res.sendFile(req.params[0], { root: './stream' }));
 
 // Run the server
 console.log(`Server running at http://${HOST}:${PORT}`);
