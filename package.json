@@ -7,7 +7,9 @@
   "author": "Mattia Cattarinussi <mcattarinussi@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.2.2"
   },
   "scripts": {
     "start": "node server.js"
