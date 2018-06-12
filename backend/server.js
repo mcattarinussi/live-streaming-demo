@@ -42,7 +42,7 @@ apiRoutes.get('/me', (req, res) => res.json(req.user));
 // Get authrorization for watching the stream
 apiRoutes.post('/start-stream', (req, res) => {
   // Try to acquire a free slot
-  streams.lockStreamSlot(req.user.id)
+  streams.lockSlot(req.user.id)
     .then(({ key, token }) => res.json({
       authToken: jwt.sign({ key, token }, SUPERSECRET),
       stream: '/stream.mpd',
@@ -55,7 +55,21 @@ apiRoutes.post('/start-stream', (req, res) => {
 });
 
 // Video streaming mpd and chunks
-apiRoutes.get('/stream/*', (req, res) => request(`${LIVESTREAM_URL}/${req.params[0]}`).pipe(res));
+apiRoutes.get('/stream/*', (req, res) => {
+  // Stream authorization token not found
+  if(!req.query.token) {
+    return res.status(401).send({ message: 'Stream authorization token not found'})
+  }
+  let { token, key } = jwt.verify(req.query.token, SUPERSECRET);
+  streams.verifyAndExtendSlotLock(key, token)
+    // Token authorized -> return stream chunk
+    .then(() => request(`${LIVESTREAM_URL}/${req.params[0]}`).pipe(res))
+    // Stream authorization token invalid or expired
+    .catch(e => {
+      console.log('Invalid or expired stream authorization token', e);
+      return res.status(401).send({ message: 'Invalid stream authorization token'});
+    });
+  });
 
 // Run the server
 console.log(`Server running at http://${HOST}:${PORT}`);

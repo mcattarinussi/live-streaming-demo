@@ -10,7 +10,7 @@ const redisClient = redis.createClient(REDIS_PORT, REDIS_HOST);
 const redisGet = promisify(redisClient.get).bind(redisClient);
 const redisSet = promisify(redisClient.set).bind(redisClient);
 
-const lockStreamSlot = async userId => {
+const lockSlot = async userId => {
   const token = 'xxxxx';
   for (let i = 0; i < MAX_CONCURRENT_STREAMS; i++) {
     let key = `stream-slot-${userId}-${i}`;
@@ -24,6 +24,17 @@ const lockStreamSlot = async userId => {
   throw 'No free stream slot available';
 };
 
-module.exports = {
-  lockStreamSlot,
+const verifyAndExtendSlotLock = async (key, token) => {
+  const value = await redisGet(key);
+  if(!value || value != token) {
+    throw 'Invalid token'
+  }
+  // Extend lock
+  console.log(`Extending lock for ${key}`);
+  return redisSet(key, token, 'EX', SLOT_LOCK_EXPIRE_SECONDS)
 }
+
+module.exports = {
+  lockSlot,
+  verifyAndExtendSlotLock,
+};
