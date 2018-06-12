@@ -27,12 +27,14 @@ $ minikube start
 
 Deploy the application
 ```bash
-$ kubectl create -f ./deployment.yml
+$ kubectl create -f ./deployment
 ```
 
 Open the app in your browser
 - On MacOS: `open $(minikube service live-streaming-demo-frontend --url)`
 - On linux: `xdg-open $(minikube service live-streaming-demo-frontend --url)`
+
+Signing with email `mcattarinussi@gmail.com` and password `pass`.
 
 ## TODO
 
