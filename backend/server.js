@@ -1,12 +1,14 @@
 const express = require('express');
 const expressJwt = require('express-jwt');
 const jwt = require('jsonwebtoken');
+const request = require('request');
 
 const users = require('./users');
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || 'localhost';
 const SUPERSECRET = process.env.SUPERSECRET || 'supersecret';
+const LIVESTREAM_URL = process.env.LIVESTREAM_URL || 'http://live-streaming-demo-encoder';
 
 const app = express();
 
@@ -37,7 +39,7 @@ apiRoutes.post('/signin', (req, res) => {
 apiRoutes.get('/me', (req, res) => res.json(req.user));
 
 // Video streaming mpd and chunks
-apiRoutes.get('/stream/*', (req, res) => res.sendFile(req.params[0], { root: './stream' }));
+apiRoutes.get('/stream/*', (req, res) => request(`${LIVESTREAM_URL}/${req.params[0]}`).pipe(res));
 
 // Run the server
 console.log(`Server running at http://${HOST}:${PORT}`);

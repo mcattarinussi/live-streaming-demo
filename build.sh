@@ -3,13 +3,13 @@
 DOCKER_USER=$(docker info | sed '/Username:/!d;s/.* //');
 
 echo "Building dash-encoder"
-docker build -t live-streaming-demo-encoder -f ./docker/dash-encoder .
+docker build -t live-streaming-demo-encoder ./video-encoder
 
 echo "Building backend app"
-docker build -t live-streaming-demo-backend -f ./docker/app.backend .
+docker build -t live-streaming-demo-backend ./backend
 
 echo "Building frontend app"
-docker build -t live-streaming-demo-frontend -f ./docker/app.frontend .
+docker build -t live-streaming-demo-frontend ./frontend
 
 if [ $DOCKER_USER ]
 then
