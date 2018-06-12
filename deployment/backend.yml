@@ -38,3 +38,8 @@ spec:
           image: mattiacattarinussi/live-streaming-demo-backend
           ports:
             - containerPort: 5000
+          env:
+            - name: REDIS_HOST
+              value: live-streaming-demo-redis
+            - name: REDIS_PORT
+              value: '6379'

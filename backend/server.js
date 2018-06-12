@@ -3,6 +3,7 @@ const expressJwt = require('express-jwt');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 
+const streams = require('./streams');
 const users = require('./users');
 
 const PORT = process.env.PORT || 5000;
@@ -30,13 +31,28 @@ apiRoutes.post('/signin', (req, res) => {
   if (!user || req.body.password !== user.password) {
     return res.status(401).json({ message: 'Invalid username or passowrd.' });
   }
-  console.log(`User ${user.info.email} succesfully signed in`);
+  console.log(`User ${user.info.id} succesfully signed in`);
   // Returns user info and authentication token
   res.json({ token: jwt.sign(user.info, SUPERSECRET) });
 });
 
 // User profile
 apiRoutes.get('/me', (req, res) => res.json(req.user));
+
+// Get authrorization for watching the stream
+apiRoutes.post('/start-stream', (req, res) => {
+  // Try to acquire a free slot
+  streams.lockStreamSlot(req.user.id)
+    .then(({ key, token }) => res.json({
+      authToken: jwt.sign({ key, token }, SUPERSECRET),
+      stream: '/stream.mpd',
+    }))
+    .catch(e => {
+      // TODO: handle other exceptions
+      console.log('Error trying to acquire lock', e);
+      return res.status(403).send({ message: 'Reached maximum number of simultaneous streams' });
+    })
+});
 
 // Video streaming mpd and chunks
 apiRoutes.get('/stream/*', (req, res) => request(`${LIVESTREAM_URL}/${req.params[0]}`).pipe(res));
