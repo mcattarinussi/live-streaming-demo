@@ -13,18 +13,20 @@
         <input type="submit" value="SIGNIN">
         <p id="login-error-msg"></p>
     </form>
+    <h2 id="stream-auth-error-msg"></h2>
     <div id="video-container"></div>
 </body>
 <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
 <script>
     var signinFormEl = document.getElementById('login');
     var loginErrorEl = document.getElementById('login-error-msg');
+    var streamAuthError = document.getElementById('stream-auth-error-msg');
     var videoContainerEl = document.getElementById('video-container');
-    var jwtToken = localStorage.getItem('jwtToken');
+    var authToken = localStorage.getItem('authToken');
 
     // Check if user is already logged in
-    if (jwtToken) {
-        console.log('Found jwt token in local storage');
+    if (authToken) {
+        console.log('Found auth token in local storage');
         showVideoStream();
     } else {
         console.log('User not authenticated');
@@ -44,12 +46,12 @@
             // Also store jwt token in the localStorage
             if (xhr.status === 200) {
                 signinFormEl.hidden = true;
-                jwtToken = result.token;
-                localStorage.setItem('jwtToken', jwtToken);
+                authToken = result.token;
+                localStorage.setItem('authToken', authToken);
                 showVideoStream();
             }
             else {
-                // Show error message
+                // Show login error message
                 loginErrorEl.innerText = result.message;
             }
         };
@@ -62,16 +64,41 @@
     });
 
     function showVideoStream() {
+        // Get stream auth token
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/start-stream');
+        xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+        // Stream auth response handler
+        xhr.onload = function() {
+            var result = JSON.parse(xhr.responseText);
+            // Successfully obtained token. Show video player
+            if (xhr.status === 200) {
+                streamAuthError.hidden = true;
+                const { token, streamUrl } = result;
+                console.log('Successfully obtained stream auth token');
+                initVideoStream(streamUrl, token);
+            }
+            else {
+                // Show error message
+                streamAuthError.hidden = false;
+                streamAuthError.innerText = result.message;
+            }
+        };
+        xhr.send();
+    }
+
+    function initVideoStream(streamUrl, streamToken) {
         // Initialize video player
         console.log('Initializing video player');
         videoContainerEl.innerHTML = '<video id="video-player" controls></video>';
         var player = dashjs.MediaPlayer().create();
         player.extend('RequestModifier', () => ({
             modifyRequestHeader: xhr => {
-                xhr.setRequestHeader('Authorization', `Bearer ${jwtToken}`);
+                xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+                xhr.setRequestHeader('x-stream-auth', streamToken);
                 return xhr;
             }
         }), true);
-        player.initialize(document.querySelector("#video-player"), '/api/stream/stream.mpd', true);
+        player.initialize(document.querySelector("#video-player"), streamUrl, true);
     }
 </script>
