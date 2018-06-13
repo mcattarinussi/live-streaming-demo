@@ -10,8 +10,7 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-  # TODO: use LoadBalance
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
