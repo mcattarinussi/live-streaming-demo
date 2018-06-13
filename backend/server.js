@@ -44,8 +44,8 @@ apiRoutes.post('/start-stream', (req, res) => {
   // Try to acquire a free slot
   streams.lockSlot(req.user.id)
     .then(({ key, token }) => res.json({
-      authToken: jwt.sign({ key, token }, SUPERSECRET),
-      stream: '/stream.mpd',
+      token: jwt.sign({ key, token }, SUPERSECRET),
+      streamUrl: '/api/stream/stream.mpd',
     }))
     .catch(e => {
       // TODO: handle other exceptions
@@ -57,10 +57,11 @@ apiRoutes.post('/start-stream', (req, res) => {
 // Video streaming mpd and chunks
 apiRoutes.get('/stream/*', (req, res) => {
   // Stream authorization token not found
-  if(!req.query.token) {
-    return res.status(401).send({ message: 'Stream authorization token not found'})
+  if(!req.headers['x-stream-auth']) {
+    return res.status(401).send({ message: 'Stream authorization header not found'})
   }
-  let { token, key } = jwt.verify(req.query.token, SUPERSECRET);
+  // TODO: catch errors here
+  let { token, key } = jwt.verify(req.headers['x-stream-auth'], SUPERSECRET);
   streams.verifyAndExtendSlotLock(key, token)
     // Token authorized -> return stream chunk
     .then(() => request(`${LIVESTREAM_URL}/${req.params[0]}`).pipe(res))
