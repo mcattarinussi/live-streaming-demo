@@ -9,6 +9,15 @@ const users = {
     },
     password: 'pass',
   },
+  'guest@example.com': {
+    info: {
+      id: '9b31a8c5-c319-466c-a284-65fe4e9e3cd6',
+      email: 'guest@example.com',
+      firstName: 'Guest',
+      lastName: 'Foo',
+    },
+    password: 'pass',
+  },
 };
 
 const getUser = email => users[email] || null;
