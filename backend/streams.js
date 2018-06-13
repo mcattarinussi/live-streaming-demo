@@ -1,4 +1,5 @@
 const redis = require('redis');
+const uuidv4 = require('uuid/v4');
 const { promisify } = require('util');
 
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
@@ -11,7 +12,7 @@ const redisGet = promisify(redisClient.get).bind(redisClient);
 const redisSet = promisify(redisClient.set).bind(redisClient);
 
 const lockSlot = async userId => {
-  const token = 'xxxxx';
+  const token = uuidv4();
   for (let i = 0; i < MAX_CONCURRENT_STREAMS; i++) {
     let key = `stream-slot-${userId}-${i}`;
     // Successfully acquired lock
